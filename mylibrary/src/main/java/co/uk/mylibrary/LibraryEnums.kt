@@ -1,4 +1,4 @@
-package co.uk.kotlinlibraryapp
+package co.uk.mylibrary
 
 object LibraryEnums {
     enum class Sort { ASC, DEC }

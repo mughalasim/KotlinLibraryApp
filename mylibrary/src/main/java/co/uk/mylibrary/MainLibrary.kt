@@ -1,4 +1,4 @@
-package co.uk.kotlinlibraryapp
+package co.uk.mylibrary
 
 import android.content.Context
 import android.content.res.Resources

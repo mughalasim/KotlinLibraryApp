@@ -1,4 +1,4 @@
-package co.uk.kotlinlibraryapp
+package co.uk.mylibrary
 
 data class ResultList constructor(
     var name: String? = "",

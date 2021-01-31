@@ -1,4 +1,4 @@
-package co.uk.kotlinlibraryapp
+package co.uk.mylibrary
 
 interface LibraryInterface {
     fun success()

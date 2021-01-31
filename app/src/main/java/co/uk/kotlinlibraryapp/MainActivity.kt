@@ -3,6 +3,8 @@ package co.uk.kotlinlibraryapp
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import co.uk.mylibrary.LibraryEnums
+import co.uk.mylibrary.MainLibrary
 
 class MainActivity : AppCompatActivity() {
 
