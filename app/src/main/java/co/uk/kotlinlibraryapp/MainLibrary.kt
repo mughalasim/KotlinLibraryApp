@@ -4,8 +4,15 @@ import android.content.Context
 import android.content.res.Resources
 import android.util.Log
 import java.io.InputStream
-import kotlin.math.absoluteValue
 
+/**
+ * The library gets initialized here, you pass in the activity context, the name of the csv file
+ * that is placed in the raw folder without the .csv extension and listen for a callback if they library
+ * was able to parse the csv file. The files first line and any other line where first item is empty is not read
+ * @param context the activity context is passed in.
+ * @param file_name Name of the file without the .csv extension
+ * @param listener the callback will contain the initialized class, a boolean to indicate success or false and a message.
+ */
 class MainLibrary(
     context: Context,
     file_name: String,
@@ -15,9 +22,7 @@ class MainLibrary(
     private val TAG = "MAIN LIBRARY"
     private var list: MutableList<ResultList> = mutableListOf()
 
-    enum class Sort { ASC, DEC }
-    enum class Operation { GreaterThan, LessThan }
-    enum class Categories (val type: String) { MUN("MUN"), TOP("TOP") }
+
 
     init {
         try {
@@ -76,10 +81,17 @@ class MainLibrary(
         }
     }
 
-    fun queryHeight(operation: Operation, height: Double, order: Sort, limit: Int): List<ResultList> {
+    /**
+     * Returns a List<ResultList> when you specify the type of operation either greater than or less than the provided height value, set the sort
+     * and limit
+     * @param operation Could be less than "<" or Greater than ">"
+     * @param height The height that needs to be compared with
+     * @param sort (Optional) Results to be sorted in ascending or descending order, default is Ascending
+     * @param limit (Optional) Results to be limited by this value passed in
+     */
+    fun queryHeight(operation: LibraryEnums.Operation, height: Double, sort: LibraryEnums.Sort = LibraryEnums.Sort.ASC, limit: Int = 0): List<ResultList> {
 
-        if (list.isEmpty()) {
-            Log.d(TAG, "No data is currently present in the provided csv file")
+        if (validateListSizeOrLimit(limit)){
             return listOf()
         }
 
@@ -88,17 +100,12 @@ class MainLibrary(
             return listOf()
         }
 
-        if (limit < 0) {
-            Log.d(TAG, "Invalid query for limit: $limit")
-            return listOf()
-        }
-
         var filtered: List<ResultList>
 
-        if (operation == Operation.GreaterThan) {
-            filtered = list.filter { it.height!! > height }
+        filtered = if (operation == LibraryEnums.Operation.GreaterThan) {
+            list.filter { it.height!! > height }
         } else {
-           filtered = list.filter { it.height!! < height }
+            list.filter { it.height!! < height }
         }
 
         if (limit != 0 && limit < filtered.size) {
@@ -107,7 +114,7 @@ class MainLibrary(
 
         filtered.sortedBy { it.height }
 
-        if (order == Sort.DEC) {
+        if (sort == LibraryEnums.Sort.DEC) {
             filtered.reversed()
         }
 
@@ -117,15 +124,17 @@ class MainLibrary(
         return filtered
     }
 
-    fun queryCategory(category: Categories, order: Sort, limit: Int): List<ResultList> {
 
-        if (list.isEmpty()) {
-            Log.d(TAG, "No data is currently present in the provided csv file")
-            return listOf()
-        }
+    /**
+     * Returns a List<ResultList> when you specify the type of category either MUN or TOP, set the sort
+     * and limit
+     * @param category Could be "MUN" or "TOP"
+     * @param sort (Optional) Results to be sorted in ascending or descending order. Default is Ascending
+     * @param limit (Optional) Results to be limited by this value passed in
+     */
+    fun queryCategory(category: LibraryEnums.Categories, order: LibraryEnums.Sort = LibraryEnums.Sort.ASC, limit: Int = 0): List<ResultList> {
 
-        if (limit < 0) {
-            Log.d(TAG, "Invalid query for limit: $limit")
+        if (validateListSizeOrLimit(limit)){
             return listOf()
         }
 
@@ -139,7 +148,7 @@ class MainLibrary(
 
         filtered.sortedBy { it.height }
 
-        if (order == Sort.DEC) {
+        if (order == LibraryEnums.Sort.DEC) {
             filtered.reversed()
         }
 
@@ -149,12 +158,18 @@ class MainLibrary(
         return filtered
     }
 
-    // TODO - Filter by TOP or MUN
-    // TODO - Sort by height (ascending or descending)
-    // TODO - Sort alphabetically by name (ascending or descending)
-    // TODO - Filter by top n number of results (ie top ten)
-    // TODO - Filter by minimum height
-    // TODO - Filter by maximum height
+    private fun validateListSizeOrLimit(limit: Int): Boolean{
+        if (list.isEmpty()) {
+            Log.d(TAG, "No data is currently present in the provided csv file")
+            return true
+        }
 
+        if (limit < 0) {
+            Log.d(TAG, "Invalid query for limit: $limit")
+            return true
+        }
+
+        return false
+    }
 
 }
