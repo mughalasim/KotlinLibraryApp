@@ -13,30 +13,23 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-
         // TODO - Initialize the library from here and get a call back to check if the resource
         //  passed in can be parsed correctly
         Log.d(TAG, "Init the library")
-        val library = MainLibrary(this, "munro_data") {
-            if (it) {
-                Toast.makeText(this, "Library initialized successfully", Toast.LENGTH_LONG).show()
-            } else {
-                Toast.makeText(this, "Failed to init the library", Toast.LENGTH_LONG).show()
+        MainLibrary(this, "munro_data") {success, message, self ->
+            if (success) {
+                // TODO - Now that the library has been initialized correctly we can
+                //   perform queries on the data, want to avoid usage of an un-initialized library
+
+                // TODO - If the query is invalid handle the response accordingly
+                self?.query { success, message, data ->
+                    Log.d(TAG, data.toString())
+                    Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+                }
+
             }
+            Toast.makeText(this, message, Toast.LENGTH_LONG).show()
         }
-
-        // TODO - Now that the library has been initialized correctly we can
-        //   perform queries on the data
-
-        // TODO - If the query is invalid handle the response accordingly
-        library.query { success, data ->
-
-        }
-
-
     }
-
-
-
 
 }

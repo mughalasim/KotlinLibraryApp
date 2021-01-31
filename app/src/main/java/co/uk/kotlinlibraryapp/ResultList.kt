@@ -6,4 +6,9 @@ data class ResultList constructor(
     var hill: String? = "",
     var reference: String? = ""
 
-)
+
+) {
+    override fun toString(): String {
+        return "ResultList(name=$name, height=$height, hill=$hill, reference=$reference)"
+    }
+}

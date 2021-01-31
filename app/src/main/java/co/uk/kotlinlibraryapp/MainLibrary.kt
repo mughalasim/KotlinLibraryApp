@@ -4,7 +4,7 @@ import android.content.Context
 import android.util.Log
 import java.io.InputStream
 
-class MainLibrary (context: Context, file_name: String, listener: (Boolean) -> Unit) {
+class MainLibrary (context: Context, file_name: String, listener: (Boolean, String,  MainLibrary?) -> Unit) {
 
     private val TAG = "MAIN LIBRARY"
     private var list: List<ResultList> = listOf()
@@ -36,11 +36,11 @@ class MainLibrary (context: Context, file_name: String, listener: (Boolean) -> U
         // Close the reader at this point
         reader.close()
 
-        listener(true)
+        listener(true,"Successfully parsed the CSV file", this)
     }
 
-    fun query(listener: (Boolean, List<ResultList>?) -> Unit) {
+    fun query(listener: (Boolean, String, List<ResultList>?) -> Unit) {
 
-        listener(false, null)
+        listener(false,"", null)
     }
 }
