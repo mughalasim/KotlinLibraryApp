@@ -96,7 +96,7 @@ class MainLibrary(context: Context, file_name: String) {
         filtered.sortedBy { it.height }
 
         if (sort == LibraryEnums.Sort.DEC) {
-            filtered.reversed()
+            filtered = filtered.reversed()
         }
 
         filtered.forEach { Log.d(tag, it.height.toString()) }
@@ -127,7 +127,7 @@ class MainLibrary(context: Context, file_name: String) {
         filtered.sortedBy { it.name }
 
         if (sort == LibraryEnums.Sort.DEC) {
-            filtered.reversed()
+           filtered = filtered.reversed()
         }
 
         filtered.forEach { Log.d(tag, it.category.toString()) }
