@@ -1,14 +1,11 @@
 package co.uk.kotlinlibraryapp
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import co.uk.mylibrary.LibraryEnums
 import co.uk.mylibrary.MainLibrary
 
 class MainActivity : AppCompatActivity() {
-
-    private val tag = "MAIN ACTIVITY"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
