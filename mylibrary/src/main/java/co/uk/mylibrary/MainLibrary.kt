@@ -7,22 +7,15 @@ import java.io.InputStream
 
 /**
  * The library gets initialized here, you pass in the activity context, the name of the csv file
- * that is placed in the raw folder without the .csv extension and listen for a callback if they library
- * was able to parse the csv file. The files first line and any other line where first item is empty is not read
+ * that is placed in the raw folder without the .csv extension.
+ * The files first line and any other line where first item is empty is not read
  * @param context the activity context is passed in.
  * @param file_name Name of the file without the .csv extension
- * @param listener the callback will contain the initialized class, a boolean to indicate success or false and a message.
  */
-class MainLibrary(
-    context: Context,
-    file_name: String,
-    listener: (Boolean, String, MainLibrary?) -> Unit
-) {
+class MainLibrary(context: Context, file_name: String) {
 
-    private val TAG = "MAIN LIBRARY"
+    private val tag = "MAIN LIBRARY"
     private var list: MutableList<ResultList> = mutableListOf()
-
-
 
     init {
         try {
@@ -58,26 +51,17 @@ class MainLibrary(
             reader.close()
 
             if (list.isEmpty()) {
-                listener(false, "No data is currently present in the provided csv file", null)
-            } else {
-                listener(true, "Successfully parsed the CSV file", this)
+                throw LibraryException("No data is currently present in the provided csv file")
             }
 
         } catch (e: Resources.NotFoundException) {
-            Log.d(TAG, e.toString())
-            listener(
-                false,
-                "File not found in the Raw folder, Are you sure the name is correct",
-                null
-            )
+            Log.d(tag, e.toString())
+            throw LibraryException("File not found in the Raw folder, Are you sure the name is correct")
 
         } catch (f: IndexOutOfBoundsException) {
-            Log.d(TAG, f.toString())
-            listener(
-                false,
-                "The file seems to be missing some data, please check and try again",
-                null
-            )
+            Log.d(tag, f.toString())
+            throw LibraryException("The file seems to be missing some data, please check and try again")
+
         }
     }
 
@@ -91,13 +75,10 @@ class MainLibrary(
      */
     fun queryHeight(operation: LibraryEnums.Operation, height: Double, sort: LibraryEnums.Sort = LibraryEnums.Sort.ASC, limit: Int = 0): List<ResultList> {
 
-        if (validateListSizeOrLimit(limit)){
-            return listOf()
-        }
+        validateListSizeOrLimit(limit)
 
         if (height < 0) {
-            Log.d(TAG, "Invalid query for height: $height")
-            return listOf()
+            throw LibraryException("Invalid query for height: $height")
         }
 
         var filtered: List<ResultList>
@@ -118,12 +99,11 @@ class MainLibrary(
             filtered.reversed()
         }
 
-        filtered.forEach { Log.d(TAG, it.height.toString()) }
-        Log.d(TAG, "Found ${filtered.size} items")
+        filtered.forEach { Log.d(tag, it.height.toString()) }
+        Log.d(tag, "Found ${filtered.size} items")
 
         return filtered
     }
-
 
     /**
      * Returns a List<ResultList> when you specify the type of category either MUN or TOP, set the sort
@@ -132,11 +112,9 @@ class MainLibrary(
      * @param sort (Optional) Results to be sorted in ascending or descending order. Default is Ascending
      * @param limit (Optional) Results to be limited by this value passed in
      */
-    fun queryCategory(category: LibraryEnums.Categories, order: LibraryEnums.Sort = LibraryEnums.Sort.ASC, limit: Int = 0): List<ResultList> {
+    fun queryCategory(category: LibraryEnums.Categories, sort: LibraryEnums.Sort = LibraryEnums.Sort.ASC, limit: Int = 0): List<ResultList> {
 
-        if (validateListSizeOrLimit(limit)){
-            return listOf()
-        }
+        validateListSizeOrLimit(limit)
 
         var filtered: List<ResultList>
 
@@ -146,30 +124,28 @@ class MainLibrary(
             filtered = filtered.take(limit)
         }
 
-        filtered.sortedBy { it.height }
+        filtered.sortedBy { it.name }
 
-        if (order == LibraryEnums.Sort.DEC) {
+        if (sort == LibraryEnums.Sort.DEC) {
             filtered.reversed()
         }
 
-        filtered.forEach { Log.d(TAG, it.category.toString()) }
-        Log.d(TAG, "Found ${filtered.size} items")
+        filtered.forEach { Log.d(tag, it.category.toString()) }
+        Log.d(tag, "Found ${filtered.size} items")
 
         return filtered
     }
 
-    private fun validateListSizeOrLimit(limit: Int): Boolean{
+    private fun validateListSizeOrLimit(limit: Int){
         if (list.isEmpty()) {
-            Log.d(TAG, "No data is currently present in the provided csv file")
-            return true
+            Log.d(tag, "No data is currently present in the provided csv file")
+            throw LibraryException("No data is currently present in the provided csv file")
         }
 
         if (limit < 0) {
-            Log.d(TAG, "Invalid query for limit: $limit")
-            return true
+            Log.d(tag, "Invalid query for limit: $limit")
+            throw LibraryException("Invalid query for limit: $limit")
         }
-
-        return false
     }
 
 }
