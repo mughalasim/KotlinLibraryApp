@@ -81,28 +81,15 @@ class MainLibrary(context: Context, file_name: String) {
             throw LibraryException("Invalid query for height: $height")
         }
 
-        var filtered: List<ResultList>
-
-        filtered = if (operation == LibraryEnums.Operation.GreaterThan) {
-            list.filter { it.height!! > height }
-        } else {
-            list.filter { it.height!! < height }
-        }
-
-        if (limit != 0 && limit < filtered.size) {
-          filtered = filtered.take(limit)
-        }
-
-        filtered.sortedBy { it.height }
-
-        if (sort == LibraryEnums.Sort.DEC) {
-            filtered = filtered.reversed()
-        }
-
-        filtered.forEach { Log.d(tag, it.height.toString()) }
-        Log.d(tag, "Found ${filtered.size} items")
-
-        return filtered
+        return setSortAndLimit(
+            if (operation == LibraryEnums.Operation.GreaterThan) {
+                list.filter { it.height!! > height }.sortedBy { it.height }
+            } else {
+                list.filter { it.height!! < height }.sortedBy { it.height }
+            },
+            sort,
+            limit
+        )
     }
 
     /**
@@ -116,36 +103,41 @@ class MainLibrary(context: Context, file_name: String) {
 
         validateListSizeOrLimit(limit)
 
-        var filtered: List<ResultList>
-
-        filtered = list.filter { it.category!! ==  category.type }
-
-        if (limit != 0 && limit < filtered.size) {
-            filtered = filtered.take(limit)
-        }
-
-        filtered.sortedBy { it.name }
-
-        if (sort == LibraryEnums.Sort.DEC) {
-           filtered = filtered.reversed()
-        }
-
-        filtered.forEach { Log.d(tag, it.category.toString()) }
-        Log.d(tag, "Found ${filtered.size} items")
-
-        return filtered
+        return setSortAndLimit(
+            list.filter { it.category!! == category.type }.sortedBy { it.name },
+            sort,
+            limit
+        )
     }
 
-    private fun validateListSizeOrLimit(limit: Int){
+    private fun validateListSizeOrLimit(limit: Int) {
+        // Just need to make sure that we are not performing useless queries on an empty list,
+        // Will throw an empty list exception
         if (list.isEmpty()) {
-            Log.d(tag, "No data is currently present in the provided csv file")
             throw LibraryException("No data is currently present in the provided csv file")
         }
-
+        // If the limit passed in is invalid, the library will throw an exception
         if (limit < 0) {
-            Log.d(tag, "Invalid query for limit: $limit")
             throw LibraryException("Invalid query for limit: $limit")
         }
+    }
+
+    private fun setSortAndLimit(filtered: List<ResultList>, sort: LibraryEnums.Sort, limit: Int): List<ResultList> {
+        var result: List<ResultList> = filtered
+
+        // Order the large list in ascending or descending fashion
+        if (sort == LibraryEnums.Sort.DEC) {
+            result = result.reversed()
+        }
+
+        // Apply a limit to the final result
+        if (limit != 0 && limit < result.size) {
+            result = result.take(limit)
+        }
+
+        Log.d(tag, "Found ${filtered.size} items")
+
+        return result
     }
 
 }

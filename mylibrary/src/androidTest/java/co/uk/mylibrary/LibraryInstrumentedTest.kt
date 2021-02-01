@@ -37,10 +37,10 @@ class LibraryInstrumentedTest {
     }
 
     @Test
-    fun query_height_greater_than_10_and_limit_10() {
-        val list = libInstance.queryHeight(LibraryEnums.Operation.GreaterThan, 10.0, limit = 10)
+    fun query_height_greater_than_10_and_limit_100() {
+        val list = libInstance.queryHeight(LibraryEnums.Operation.GreaterThan, 10.0, limit = 100)
         assert(list.isNotEmpty())
-        assert(list.size == 10)
+        assert(list.size == 100)
     }
 
     @Test
