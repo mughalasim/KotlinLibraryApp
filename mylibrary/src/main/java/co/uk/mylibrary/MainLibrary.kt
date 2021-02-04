@@ -34,6 +34,9 @@ class MainLibrary(context: Context, file_name: String) {
             while (iterator.hasNext()) {
                 val line = iterator.next()
                 val split = line.split(",")
+                if (split.size < 29){
+                    throw LibraryException("The file seems to be missing some data on line $line, please check and try again")
+                }
                 if (split[0] != "" && split[9] != "") {
                     val item = ResultList(
                         // Was a little confused as the name is a URL, so is the hill
@@ -83,9 +86,9 @@ class MainLibrary(context: Context, file_name: String) {
 
         return setSortAndLimit(
             if (operation == LibraryEnums.Operation.GreaterThan) {
-                list.filter { it.height!! > height }.sortedBy { it.height }
+                list.filter { it.height > height }.sortedBy { it.height }
             } else {
-                list.filter { it.height!! < height }.sortedBy { it.height }
+                list.filter { it.height < height }.sortedBy { it.height }
             },
             sort,
             limit
@@ -104,7 +107,7 @@ class MainLibrary(context: Context, file_name: String) {
         validateListSizeOrLimit(limit)
 
         return setSortAndLimit(
-            list.filter { it.category!! == category.type }.sortedBy { it.name },
+            list.filter { it.category == category.type }.sortedBy { it.name },
             sort,
             limit
         )

@@ -48,7 +48,7 @@ class LibraryInstrumentedTest {
         val list = libInstance.queryHeight(LibraryEnums.Operation.GreaterThan, 1.0, LibraryEnums.Sort.ASC, limit = 10)
         assert(list.isNotEmpty())
         assert(list.size == 10)
-        assert(list[1].height!! <= list[8].height!!)
+        assert(list[1].height <= list[8].height)
     }
 
     @Test
@@ -56,7 +56,7 @@ class LibraryInstrumentedTest {
         val list = libInstance.queryHeight(LibraryEnums.Operation.GreaterThan, 1.0, LibraryEnums.Sort.DEC, limit = 10)
         assert(list.isNotEmpty())
         assert(list.size == 10)
-        assert(list[1].height!! >= list[8].height!!)
+        assert(list[1].height >= list[8].height)
     }
 
     @Test
